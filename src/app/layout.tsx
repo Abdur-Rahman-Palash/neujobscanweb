@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "NeuJobScan - AI-Powered ATS Resume Optimization",
   description: "Optimize your resume for ATS systems and land your dream job with AI-powered analysis and matching.",
+  viewport: 'width=device-width, initial-scale=1'
 };
 
 export default function RootLayout({

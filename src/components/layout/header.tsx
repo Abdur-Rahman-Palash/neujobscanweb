@@ -102,6 +102,10 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                 ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="text-gray-300 hover:text-white hover:bg-white/10 focus:text-white focus:bg-white/10">
+                  <Link href="/signup" className="w-full">Get started</Link>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             
@@ -127,10 +131,10 @@ export function Header() {
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-3">
               <Button variant="ghost" asChild className="text-gray-300 hover:text-white hover:bg-white/10 border border-gray-600">
-                <Link href="#signin">Sign In</Link>
+                <Link href="/signin">Sign In</Link>
               </Button>
               <Button asChild className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-blue-500/25 transition-all">
-                <Link href="#get-started">Get Started</Link>
+                <Link href="/signup">Get Started</Link>
               </Button>
             </div>
 

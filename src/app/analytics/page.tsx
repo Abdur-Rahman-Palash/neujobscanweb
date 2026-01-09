@@ -18,7 +18,9 @@ import {
   ArrowUp,
   ArrowDown
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 interface AnalyticsData {
@@ -43,6 +45,15 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/signup?next=/analytics');
+    }
+  }, [user, loading, router]);
+
   const [analytics] = useState<AnalyticsData>({
     totalResumes: 12,
     totalJobs: 45,

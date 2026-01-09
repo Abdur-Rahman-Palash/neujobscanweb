@@ -14,6 +14,11 @@ A modern, enterprise-grade ATS (Applicant Tracking System) optimization platform
 
 ## 🛠️ Tech Stack
 
+**Hosting & Deployment**
+- Node.js / Next.js (recommended for full features)
+- Container-ready (Dockerfile + docker-compose provided)
+- Apache static hosting (use `public/.htaccess` after `next export`)
+
 ### Frontend
 - **Next.js 15** (App Router)
 - **TypeScript** (strict mode)
@@ -163,23 +168,47 @@ Default max file size: 10MB
 2. **Add environment variables** in Vercel dashboard
 3. **Deploy** - Vercel will automatically build and deploy
 
-### Node.js VPS/Hostinger
+### Node.js VPS / Docker (VPS or Hostinger)
 
-1. **Build the application**:
+1. **Build locally** for a production image or use Dockerfile directly:
    ```bash
-   npm run build
+   docker build -t neujobscan:latest .
+   docker run -p 3000:3000 neujobscan:latest
    ```
 
-2. **Start production server**:
+2. **Use docker-compose** to run the app and optional services:
    ```bash
-   npm start
+   docker-compose up --build -d
    ```
 
-3. **Use PM2 for process management**:
-   ```bash
-   npm install -g pm2
-   pm2 start npm --name "neujobscan" -- start
-   ```
+3. **System services / process managers** (alternative to Docker):
+   - Build: `npm run build`
+   - Start: `npm start`
+   - Use PM2 or systemd for process supervision and restart policies.
+
+4. **Apache + Node proxy**: prefer configuring a vhost with ProxyPass/ProxyPassReverse to forward traffic to `http://127.0.0.1:3000`.
+
+5. **Static export**: run `npm run build && next export` then copy `out/` to an Apache server and use `public/.htaccess` for security and routing.
+
+### Integrating Other Backends (Python/Django, PHP, etc.)
+
+- Deploy other backends as separate services (containers or separate VPS). Use internal networking or an API gateway to communicate between services.
+- Use CORS and authentication tokens (JWT) between services.
+- Example: `docker-compose.yml` includes an example `django` service to show separation of concerns.
+
+### Payment Gateway Integration
+
+- We added a pluggable payments provider scaffold: `src/lib/payments/provider.ts` and a mock `/api/payments/create-session` route.
+- For production: implement Stripe Checkout + webhooks (recommended), or connect PayPal / Coinbase Commerce for crypto support.
+
+### Security and Hardening (quick checklist)
+- Use HTTPS with a valid TLS cert (Let’s Encrypt, cloud provider managed TLS, or a load balancer).
+- Store secrets in environment variables or a secret store (don’t commit `.env.local` to Git).
+- Setup rate limiting, CSP, and input validation.
+
+---
+
+
 
 ## 🧪 Testing
 

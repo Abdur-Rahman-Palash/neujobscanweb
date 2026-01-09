@@ -13,7 +13,12 @@ import {
   Calendar,
   TrendingUp
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import useResumes from '@/lib/useResumes';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 interface Resume {
@@ -26,32 +31,21 @@ interface Resume {
 }
 
 export default function ResumesPage() {
-  const [resumes] = useState<Resume[]>([
-    {
-      id: '1',
-      name: 'Senior_Frontend_Developer_Resume.pdf',
-      uploadDate: '2024-01-15',
-      atsScore: 85,
-      status: 'active',
-      matchCount: 12
-    },
-    {
-      id: '2',
-      name: 'Full_Stack_Developer_Resume.docx',
-      uploadDate: '2024-01-10',
-      atsScore: 78,
-      status: 'active',
-      matchCount: 8
-    },
-    {
-      id: '3',
-      name: 'React_Developer_Resume.pdf',
-      uploadDate: '2024-01-05',
-      atsScore: 92,
-      status: 'draft',
-      matchCount: 5
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/signup?next=/resumes');
     }
-  ]);
+  }, [user, loading, router]);
+
+  const { resumes, deleteResume, downloadResume, getContent } = useResumes();
+  const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
+
+  const selectedResume = resumes.find(r => r.id === selectedResumeId) || null;
+  const selectedContent = selectedResume ? getContent(selectedResume.id) : null;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -213,13 +207,13 @@ export default function ResumesPage() {
                       </div>
                       
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => { setSelectedResumeId(resume.id); setViewerOpen(true); }}>
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => { downloadResume(resume.id); toast.success('Downloading resume'); }}>
                           <Download className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => { if (confirm('Delete this resume?')) { deleteResume(resume.id); toast.success('Resume deleted'); } }}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -230,6 +224,28 @@ export default function ResumesPage() {
             </CardContent>
           </Card>
         </motion.div>
+
+        <Dialog open={viewerOpen} onOpenChange={(open) => { if (!open) setSelectedResumeId(null); setViewerOpen(open); }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{selectedResume?.name}</DialogTitle>
+            </DialogHeader>
+            <div className="mt-2 max-h-64 overflow-auto">
+              <pre className="text-sm whitespace-pre-wrap">{selectedContent ?? 'No preview available.'}</pre>
+            </div>
+            <DialogFooter>
+              <div className="flex gap-2 w-full justify-end">
+                {selectedResume && (
+                  <Button onClick={() => { downloadResume(selectedResume.id); toast.success('Downloading'); }}>
+                    <Download className="h-4 w-4 mr-2" /> Download
+                  </Button>
+                )}
+                <Button variant="ghost" onClick={() => setViewerOpen(false)}>Close</Button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
       </div>
     </div>
   );

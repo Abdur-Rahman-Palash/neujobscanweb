@@ -21,9 +21,20 @@ import {
   Upload,
   BarChart3
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function DashboardPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/signup?next=/dashboard');
+    }
+  }, [user, loading, router]);
+
   const [activeTab, setActiveTab] = useState('overview');
   const [uploadedResume, setUploadedResume] = useState<any>(null);
   const [matchResult, setMatchResult] = useState<any>(null);
@@ -128,7 +139,7 @@ export default function DashboardPage() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 gap-2 overflow-x-auto">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="resume-upload">Upload Resume</TabsTrigger>
             <TabsTrigger value="ats-scanner">ATS Scanner</TabsTrigger>
@@ -182,7 +193,7 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <Button 
-                      onClick={() => setActiveTab('upload')}
+                      onClick={() => setActiveTab('resume-upload')}
                       className="w-full justify-start"
                       variant="outline"
                     >
@@ -296,6 +307,15 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <PremiumFeatures userId={mockUser.id} />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <AnalyticsDashboard userId={mockUser.id} />
             </motion.div>
           </TabsContent>
         </Tabs>

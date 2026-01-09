@@ -2,6 +2,9 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +38,8 @@ const plans = [
     ],
     color: 'from-gray-500 to-gray-600',
     popular: false,
-    buttonText: 'Get Started'
+    buttonText: 'Get Started',
+    href: '/signup?plan=Free'
   },
   {
     name: 'Professional',
@@ -58,7 +62,9 @@ const plans = [
     ],
     color: 'from-blue-500 to-blue-600',
     popular: true,
-    buttonText: 'Start Free Trial'
+    // per request, button for trial will show 'Start' and lead to signup with trial flag
+    buttonText: 'Start',
+    href: '/signup?plan=Professional&trial=1'
   },
   {
     name: 'Enterprise',
@@ -78,11 +84,21 @@ const plans = [
     notIncluded: [],
     color: 'from-purple-500 to-purple-600',
     popular: false,
-    buttonText: 'Contact Sales'
+    buttonText: 'Contact Sales',
+    href: '/contact?plan=Enterprise'
   }
 ];
 
 export default function PricingPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/signup?next=/pricing');
+    }
+  }, [user, loading, router]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
@@ -176,7 +192,7 @@ export default function PricingPage() {
                         size="lg"
                         asChild
                       >
-                        <Link href={plan.name === 'Enterprise' ? '/contact' : '/auth/signup'}>
+                        <Link href={plan.href || (plan.name === 'Enterprise' ? '/contact' : '/signup')}>
                           {plan.buttonText}
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
@@ -264,7 +280,7 @@ export default function PricingPage() {
               No credit card required. 14 days free on all features.
             </p>
             <Button size="lg" className="text-lg px-8 py-3 bg-white text-blue-600 hover:bg-gray-100" asChild>
-              <Link href="/auth/signup">
+              <Link href="/signup">
                 Start Free Trial
                 <Zap className="ml-2 h-5 w-5" />
               </Link>

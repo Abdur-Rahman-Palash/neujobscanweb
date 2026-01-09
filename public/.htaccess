@@ -1,0 +1,36 @@
+# .htaccess for serving static exports or controlling Apache behavior when proxying to Node
+# If you plan to use Apache to serve a static export of this app (next export), use the following.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Prevent direct access to server files
+  RewriteRule "^\.env$" - [F]
+  RewriteRule "^\.git" - [F]
+
+  # Serve existing files directly; otherwise, rewrite to index.html (SPA fallback for static export)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Security headers
+  Header set X-Frame-Options "DENY"
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "no-referrer-when-downgrade"
+  Header set X-XSS-Protection "1; mode=block"
+  Header set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+  # Caching for static assets (tune as needed)
+  <FilesMatch "\.(css|js|jpg|jpeg|png|gif|svg|ico|woff2|woff)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
+# NOTE: If you're running Node (next start) behind Apache, use a reverse proxy configuration in your Apache vhost
+# Example (vhost, not .htaccess):
+#   ProxyPass / http://127.0.0.1:3000/
+#   ProxyPassReverse / http://127.0.0.1:3000/
+# Make sure `mod_proxy` and `mod_proxy_http` are enabled and proxy rules are placed in vhost config, not in .htaccess

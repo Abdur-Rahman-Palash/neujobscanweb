@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    image: neujobscan:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+  # example of how to add a Python/Django service side-by-side
+  django:
+    image: python:3.11-slim
+    command: bash -lc "pip install django && django-admin startproject demo_project /demo || true && python -m http.server 8000"
+    volumes:
+      - ./services/django:/demo
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

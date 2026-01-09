@@ -1,3 +1,4 @@
+export const dynamic = 'force-static';
 import { NextRequest, NextResponse } from 'next/server';
 import { AIAgentOrchestrator } from '@/lib/ai/orchestrator';
 import { ApiResponse } from '@/types';

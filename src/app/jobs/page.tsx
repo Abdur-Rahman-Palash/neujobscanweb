@@ -16,8 +16,13 @@ import {
   Heart,
   ExternalLink
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import useResumes from '@/lib/useResumes';
 
 interface Job {
   id: string;
@@ -34,7 +39,16 @@ interface Job {
 }
 
 export default function JobsPage() {
-  const [jobs] = useState<Job[]>([
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/signup?next=/jobs');
+    }
+  }, [user, loading, router]);
+
+  const [jobs, setJobs] = useState<Job[]>([
     {
       id: '1',
       title: 'Senior Frontend Developer',
@@ -89,6 +103,11 @@ export default function JobsPage() {
     }
   ]);
 
+  const { resumes } = useResumes();
+  const [applyOpen, setApplyOpen] = useState(false);
+  const [applyJob, setApplyJob] = useState<Job | null>(null);
+  const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
 
@@ -123,6 +142,33 @@ export default function JobsPage() {
     if (score >= 60) return 'text-yellow-600 bg-yellow-50';
     return 'text-red-600 bg-red-50';
   };
+
+  async function handleApply() {
+    if (!applyJob) return;
+    if (!selectedResumeId) {
+      toast.error('Please select a resume or upload one.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId: applyJob.id, resumeId: selectedResumeId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Application submitted');
+        setJobs(jobs.map(j => j.id === applyJob.id ? { ...j, status: 'applied' } : j));
+        setApplyOpen(false);
+      } else {
+        toast.error('Application failed');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Application failed');
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -328,7 +374,7 @@ export default function JobsPage() {
                           <Heart className="h-4 w-4 mr-1" />
                           Save
                         </Button>
-                        <Button size="sm">
+                        <Button size="sm" onClick={() => { setApplyJob(job); if (resumes.length > 0) setSelectedResumeId(resumes[0].id); setApplyOpen(true); }}>
                           <ExternalLink className="h-4 w-4 mr-1" />
                           Apply Now
                         </Button>
@@ -340,6 +386,45 @@ export default function JobsPage() {
             </Card>
           ))}
         </motion.div>
+
+        <Dialog open={applyOpen} onOpenChange={(open) => { if (!open) setApplyJob(null); setApplyOpen(open); }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Apply to {applyJob?.title}</DialogTitle>
+            </DialogHeader>
+
+            <div className="mt-4">
+              {resumes.length === 0 ? (
+                <div>
+                  <p className="mb-4">You have no resumes. Upload one first.</p>
+                  <Button asChild>
+                    <Link href="/resumes">Upload Resume</Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {resumes.map(r => (
+                    <label key={r.id} className={`flex items-center justify-between p-3 border rounded ${selectedResumeId === r.id ? 'bg-gray-50 border-gray-300' : ''}`}>
+                      <div>
+                        <div className="font-medium">{r.name}</div>
+                        <div className="text-xs text-gray-500">Uploaded {new Date(r.uploadDate).toLocaleDateString()}</div>
+                      </div>
+                      <input type="radio" name="resume" checked={selectedResumeId === r.id} onChange={() => setSelectedResumeId(r.id)} />
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <div className="flex gap-2 w-full justify-end">
+                <Button onClick={handleApply} disabled={resumes.length === 0}>Submit Application</Button>
+                <Button variant="ghost" onClick={() => setApplyOpen(false)}>Cancel</Button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
       </div>
     </div>
   );
