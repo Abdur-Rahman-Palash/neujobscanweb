@@ -1,5 +1,6 @@
 'use client';
 
+import { SessionProvider } from 'next-auth/react';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/context/AuthContext';
 
@@ -10,8 +11,10 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <AuthProvider>
-      {children}
-      <Toaster />
+      <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
+        {children}
+        <Toaster />
+      </SessionProvider>
     </AuthProvider>
   );
 }

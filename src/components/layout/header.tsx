@@ -27,9 +27,11 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: TrendingUp },
@@ -102,10 +104,6 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                 ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="text-gray-300 hover:text-white hover:bg-white/10 focus:text-white focus:bg-white/10">
-                  <Link href="/signup" className="w-full">Get started</Link>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             
@@ -131,10 +129,10 @@ export function Header() {
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-3">
               <Button variant="ghost" asChild className="text-gray-300 hover:text-white hover:bg-white/10 border border-gray-600">
-                <Link href="/signin">Sign In</Link>
+                <Link href="#signin">Sign In</Link>
               </Button>
               <Button asChild className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-blue-500/25 transition-all">
-                <Link href="/signup">Get Started</Link>
+                <Link href="#get-started">Get Started</Link>
               </Button>
             </div>
 
@@ -216,18 +214,20 @@ export function Header() {
                   <span className="text-sm">About</span>
                 </Link>
                 
-                <div className="flex flex-col space-y-3 pt-4 border-t border-gray-700 mt-4">
-                  <Button variant="ghost" asChild className="justify-start text-gray-300 hover:text-white hover:bg-white/10">
-                    <Link href="#signin" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign In
-                    </Link>
-                  </Button>
-                  <Button asChild className="justify-start bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0">
-                    <Link href="#get-started" onClick={() => setIsMobileMenuOpen(false)}>
-                      Get Started
-                    </Link>
-                  </Button>
-                </div>
+                {!user && (
+                  <div className="flex flex-col space-y-3 pt-4 border-t border-gray-700 mt-4">
+                    <Button variant="ghost" asChild className="justify-start text-gray-300 hover:text-white hover:bg-white/10">
+                      <Link href="/signin" onClick={() => setIsMobileMenuOpen(false)}>
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button asChild className="justify-start bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0">
+                      <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                        Get Started
+                      </Link>
+                    </Button>
+                  </div>
+                )}
               </nav>
             </motion.div>
           )}

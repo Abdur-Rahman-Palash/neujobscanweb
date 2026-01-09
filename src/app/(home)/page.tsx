@@ -69,7 +69,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="text-lg px-8 py-3" asChild>
-                <Link href="/auth/signup">
+                <Link href="/signup">
                   Start Free Trial
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -211,7 +211,7 @@ export default function HomePage() {
               Join thousands of job seekers who have successfully optimized their resumes with NeuJobScan.
             </p>
             <Button size="lg" className="text-lg px-8 py-3 bg-white text-blue-600 hover:bg-gray-100" asChild>
-              <Link href="/auth/signup">
+              <Link href="/signup">
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>

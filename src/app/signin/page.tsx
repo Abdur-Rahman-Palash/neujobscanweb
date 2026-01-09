@@ -10,7 +10,7 @@ export default function SigninPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [next, setNext] = useState<string | undefined>(undefined);
-  const { signin, demoSignin } = useAuth();
+  const auth = useAuth();
 
   useEffect(() => {
     const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
@@ -20,7 +20,7 @@ export default function SigninPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
-    await signin(email, password, next || undefined);
+    await auth.signin(email, password, next || undefined);
   };
 
   return (
@@ -43,7 +43,7 @@ export default function SigninPage() {
 
               <div className="flex space-x-2">
                 <Button type="submit" className="flex-1">Sign in</Button>
-                <Button type="button" variant="outline" onClick={() => demoSignin(next || undefined)}>Use Demo</Button>
+                <Button type="button" variant="outline" onClick={() => auth.demoSignin(next || undefined)}>Use Demo</Button>
               </div>
 
               <p className="text-xs text-gray-500">Demo accounts are provided for preview purposes. Live mode will require real credentials.</p>

@@ -186,7 +186,7 @@ export class JobParser {
 
   private static extractRequirements(lines: string[]): string[] {
     const requirementKeywords = ['requirements', 'qualifications', 'skills needed', 'what you need'];
-    let requirements: string[] = [];
+    const requirements: string[] = [];
     let collecting = false;
 
     for (let i = 0; i < lines.length; i++) {
@@ -214,7 +214,7 @@ export class JobParser {
 
   private static extractResponsibilities(lines: string[]): string[] {
     const responsibilityKeywords = ['responsibilities', 'duties', 'what you\'ll do', 'day to day'];
-    let responsibilities: string[] = [];
+    const responsibilities: string[] = [];
     let collecting = false;
 
     for (let i = 0; i < lines.length; i++) {
@@ -242,7 +242,7 @@ export class JobParser {
 
   private static extractBenefits(lines: string[]): string[] | undefined {
     const benefitKeywords = ['benefits', 'perks', 'what we offer', 'compensation'];
-    let benefits: string[] = [];
+    const benefits: string[] = [];
     let collecting = false;
 
     for (let i = 0; i < lines.length; i++) {
