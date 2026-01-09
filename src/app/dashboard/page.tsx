@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +20,6 @@ import {
 import { useState } from 'react';
 
 export default function DashboardPage() {
-  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('overview');
   const [uploadedResume, setUploadedResume] = useState<any>(null);
   const [matchResult, setMatchResult] = useState<any>(null);
@@ -39,21 +37,11 @@ export default function DashboardPage() {
     console.error('Upload error:', error);
   };
 
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h2>
-            <p className="text-gray-600 mb-6">Please sign in to access your dashboard.</p>
-            <Button asChild>
-              <Link href="/auth/signin">Sign In</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Mock user data since we removed authentication
+  const mockUser = {
+    name: 'Demo User',
+    id: '1'
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -68,7 +56,7 @@ export default function DashboardPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
               <p className="text-gray-600 mt-1">
-                Welcome back, {session.user.name}! Optimize your resume for better job matches.
+                Welcome back, {mockUser.name}! Optimize your resume for better job matches.
               </p>
             </div>
             <div className="mt-4 sm:mt-0">
@@ -326,7 +314,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <AnalyticsDashboard userId={session.user.id} />
+              <AnalyticsDashboard userId={mockUser.id} />
             </motion.div>
           </TabsContent>
         </Tabs>

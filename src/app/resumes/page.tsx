@@ -1,6 +1,5 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +26,6 @@ interface Resume {
 }
 
 export default function ResumesPage() {
-  const { data: session } = useSession();
   const [resumes] = useState<Resume[]>([
     {
       id: '1',
@@ -54,22 +52,6 @@ export default function ResumesPage() {
       matchCount: 5
     }
   ]);
-
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h2>
-            <p className="text-gray-600 mb-6">Please sign in to view your resumes.</p>
-            <Button asChild>
-              <Link href="/auth/signin">Sign In</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const getStatusColor = (status: string) => {
     switch (status) {

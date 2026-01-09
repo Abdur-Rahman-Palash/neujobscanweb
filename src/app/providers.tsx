@@ -1,6 +1,5 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
 import { Toaster } from '@/components/ui/sonner';
 
 interface ProvidersProps {
@@ -9,9 +8,9 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <SessionProvider>
+    <>
       {children}
       <Toaster />
-    </SessionProvider>
+    </>
   );
 }
