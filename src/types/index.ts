@@ -1,6 +1,4 @@
-import { User } from 'next-auth';
-
-export interface AuthUser extends User {
+export interface AuthUser {
   id: string;
   email: string;
   name?: string;
