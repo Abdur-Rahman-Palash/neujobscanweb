@@ -9,6 +9,10 @@ import { ResumeUploader } from '@/components/resume/resume-uploader';
 import { MatchScore } from '@/components/dashboard/match-score';
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
 import { ATSScanner } from '@/components/ats/ats-scanner';
+import { AIResumeOptimizer } from '@/components/ai/resume-optimizer';
+import { JobAnalyzer } from '@/components/job/job-analyzer';
+import { CoverLetterBuilder } from '@/components/cover-letter/cover-letter-builder';
+import { PremiumFeatures } from '@/components/premium/premium-features';
 import { 
   FileText, 
   Target, 
@@ -24,6 +28,8 @@ export default function DashboardPage() {
   const [uploadedResume, setUploadedResume] = useState<any>(null);
   const [matchResult, setMatchResult] = useState<any>(null);
   const [resumeText, setResumeText] = useState<string>('');
+  const [resumeData, setResumeData] = useState<any>(null);
+  const [jobData, setJobData] = useState<any>(null);
 
   const handleResumeUpload = (data: any) => {
     setUploadedResume(data);
@@ -122,27 +128,15 @@ export default function DashboardPage() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview" className="flex items-center space-x-2">
-              <BarChart3 className="h-4 w-4" />
-              <span>Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="upload" className="flex items-center space-x-2">
-              <Upload className="h-4 w-4" />
-              <span>Upload Resume</span>
-            </TabsTrigger>
-            <TabsTrigger value="ats-scanner" className="flex items-center space-x-2">
-              <Target className="h-4 w-4" />
-              <span>ATS Scanner</span>
-            </TabsTrigger>
-            <TabsTrigger value="analysis" className="flex items-center space-x-2">
-              <Target className="h-4 w-4" />
-              <span>Analysis</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center space-x-2">
-              <TrendingUp className="h-4 w-4" />
-              <span>Analytics</span>
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="resume-upload">Upload Resume</TabsTrigger>
+            <TabsTrigger value="ats-scanner">ATS Scanner</TabsTrigger>
+            <TabsTrigger value="ai-optimizer">AI Optimizer</TabsTrigger>
+            <TabsTrigger value="job-analyzer">Job Analyzer</TabsTrigger>
+            <TabsTrigger value="cover-letter">Cover Letter</TabsTrigger>
+            <TabsTrigger value="premium-features">Premium</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -217,7 +211,7 @@ export default function DashboardPage() {
             </motion.div>
           </TabsContent>
 
-          <TabsContent value="upload" className="space-y-6">
+          <TabsContent value="resume-upload" className="space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -248,73 +242,60 @@ export default function DashboardPage() {
             </motion.div>
           </TabsContent>
 
-          <TabsContent value="analysis" className="space-y-6">
+          <TabsContent value="ai-optimizer" className="space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              {uploadedResume ? (
-                <MatchScore
-                  matchResult={{
-                    id: '1',
-                    resumeId: '1',
-                    jobId: '1',
-                    overallScore: 85,
-                    atsScore: 88,
-                    keywordScore: 82,
-                    experienceScore: 85,
-                    educationScore: 90,
-                    skillScore: 80,
-                    matchPercentage: 85,
-                    strengths: [
-                      'Strong technical skills in React and TypeScript',
-                      'Relevant work experience',
-                      'Good educational background',
-                      'Well-structured resume format'
-                    ],
-                    gaps: [
-                      'Missing some key keywords from job description',
-                      'Could quantify achievements better',
-                      'Limited project descriptions'
-                    ],
-                    recommendations: [
-                      'Add specific metrics to achievements',
-                      'Include more technical keywords',
-                      'Expand project descriptions',
-                      'Add certifications section'
-                    ],
-                    missingKeywords: ['GraphQL', 'Kubernetes', 'CI/CD', 'Microservices'],
-                    createdAt: new Date()
-                  }}
-                  onViewDetails={() => console.log('View details')}
-                  onDownloadReport={() => console.log('Download report')}
-                />
-              ) : (
-                <Card>
-                  <CardContent className="p-12 text-center">
-                    <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      No Resume Uploaded Yet
-                    </h3>
-                    <p className="text-gray-600 mb-6">
-                      Upload your resume to get detailed analysis and optimization suggestions.
-                    </p>
-                    <Button onClick={() => setActiveTab('upload')}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload Resume
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
+              <AIResumeOptimizer
+                initialResumeText={resumeText}
+                initialJobText={''}
+                onOptimizationComplete={(opt) => {
+                  console.log('Optimization complete:', opt);
+                  setResumeText(opt);
+                }}
+              />
             </motion.div>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
+          <TabsContent value="job-analyzer" className="space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <AnalyticsDashboard userId={mockUser.id} />
+              <JobAnalyzer
+                onAnalysisComplete={(analysis) => {
+                  console.log('Job analysis complete:', analysis);
+                  setJobData(analysis);
+                }}
+              />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="cover-letter" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <CoverLetterBuilder 
+                onResumeData={(data) => {
+                  console.log('Resume data received:', data);
+                  setResumeData(data);
+                }}
+                onJobData={(data) => {
+                  console.log('Job data received:', data);
+                  setJobData(data);
+                }}
+              />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="premium-features" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <PremiumFeatures userId={mockUser.id} />
             </motion.div>
           </TabsContent>
         </Tabs>

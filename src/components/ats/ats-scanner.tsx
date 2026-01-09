@@ -115,6 +115,18 @@ export function ATSScanner({ onResumeUpload, initialResumeText = '', initialJobT
                 </span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Overall ATS Score</h3>
+              
+              {/* Match Rate Display */}
+              <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                <div className="flex items-center justify-center space-x-2">
+                  <TrendingUp className="h-5 w-5 text-blue-600" />
+                  <span className="text-lg font-semibold text-blue-900">Match Rate: {scanResult.keywordMatches?.matchRate || 0}%</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">
+                  {scanResult.keywordMatches?.matched?.length || 0} of {scanResult.keywordMatches?.total || 0} keywords matched
+                </p>
+              </div>
+              
               <p className="text-gray-600">{scanResult.explanation?.scoreExplanation?.whatItMeans}</p>
             </div>
 
@@ -150,9 +162,10 @@ export function ATSScanner({ onResumeUpload, initialResumeText = '', initialJobT
 
         {/* Detailed Analysis */}
         <Tabs defaultValue="breakdown" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="breakdown">Breakdown</TabsTrigger>
             <TabsTrigger value="keywords">Keywords</TabsTrigger>
+            <TabsTrigger value="formatting">Formatting</TabsTrigger>
             <TabsTrigger value="gaps">Skill Gaps</TabsTrigger>
             <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
             <TabsTrigger value="next-steps">Next Steps</TabsTrigger>
@@ -242,6 +255,110 @@ export function ATSScanner({ onResumeUpload, initialResumeText = '', initialJobT
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="formatting" className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span>ATS-Friendly Elements</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Standard Headers</span>
+                      <Badge className={scanResult.breakdown?.atsCompliance > 70 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                        {scanResult.breakdown?.atsCompliance > 70 ? "Good" : "Needs Work"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Simple Layout</span>
+                      <Badge className={scanResult.atsScore > 70 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                        {scanResult.atsScore > 70 ? "Good" : "Needs Work"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">No Tables/Columns</span>
+                      <Badge className="bg-green-100 text-green-800">Good</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Contact Info Present</span>
+                      <Badge className="bg-green-100 text-green-800">Good</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <AlertTriangle className="h-5 w-5 text-red-600" />
+                    <span>Formatting Issues</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {scanResult.atsScore < 80 && (
+                      <div className="flex items-start space-x-2 p-2 bg-red-50 rounded">
+                        <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5" />
+                        <span className="text-sm">ATS may have difficulty parsing your resume format</span>
+                      </div>
+                    )}
+                    {scanResult.breakdown?.atsCompliance < 70 && (
+                      <div className="flex items-start space-x-2 p-2 bg-yellow-50 rounded">
+                        <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
+                        <span className="text-sm">Consider using standard section headers</span>
+                      </div>
+                    )}
+                    <div className="flex items-start space-x-2 p-2 bg-blue-50 rounded">
+                      <Lightbulb className="h-4 w-4 text-blue-500 mt-0.5" />
+                      <span className="text-sm">Use bullet points for achievements</span>
+                    </div>
+                    <div className="flex items-start space-x-2 p-2 bg-blue-50 rounded">
+                      <Lightbulb className="h-4 w-4 text-blue-500 mt-0.5" />
+                      <span className="text-sm">Avoid special characters and fancy formatting</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <FileText className="h-5 w-5" />
+                  <span>Content Analysis</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-sm font-medium text-gray-600">Resume Length</span>
+                      <p className="text-lg font-semibold">{resumeText.length} characters</p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-gray-600">Word Count</span>
+                      <p className="text-lg font-semibold">{resumeText.split(/\s+/).length} words</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <span className="text-sm font-medium">Content Sections</span>
+                    <div className="flex flex-wrap gap-2">
+                      {resumeText.toLowerCase().includes('experience') && <Badge className="bg-green-100 text-green-800">Experience</Badge>}
+                      {resumeText.toLowerCase().includes('education') && <Badge className="bg-green-100 text-green-800">Education</Badge>}
+                      {resumeText.toLowerCase().includes('skills') && <Badge className="bg-green-100 text-green-800">Skills</Badge>}
+                      {resumeText.toLowerCase().includes('summary') && <Badge className="bg-green-100 text-green-800">Summary</Badge>}
+                      {resumeText.toLowerCase().includes('contact') && <Badge className="bg-green-100 text-green-800">Contact</Badge>}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="gaps" className="space-y-4">
