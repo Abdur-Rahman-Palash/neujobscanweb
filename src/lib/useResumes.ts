@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export type Resume = {
   id: string
@@ -38,25 +38,31 @@ function seedSample(): Resume[] {
 }
 
 export default function useResumes() {
-  // Use lazy initialization to avoid setState in effect
-  const [resumes, setResumes] = useState<Resume[]>(() => {
+  const [resumes, setResumes] = useState<Resume[]>([])
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (!raw) {
         const seed = seedSample()
         localStorage.setItem(STORAGE_KEY, JSON.stringify(seed))
-        return seed
+        setResumes(seed)
+      } else {
+        setResumes(JSON.parse(raw))
       }
-      return JSON.parse(raw)
     } catch (err) {
       console.error('useResumes load error', err)
-      return []
+      setResumes([])
     }
-  })
+  }, [])
 
   function persist(next: Resume[]) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    setResumes(next)
+    if (mounted) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      setResumes(next)
+    }
   }
 
   async function addResumeFile(file: File) {
@@ -115,8 +121,10 @@ export default function useResumes() {
   }
 
   function reload() {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) setResumes(JSON.parse(raw))
+    if (mounted) {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (raw) setResumes(JSON.parse(raw))
+    }
   }
 
   return {
