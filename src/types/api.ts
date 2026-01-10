@@ -1,7 +1,13 @@
-export interface AgentResult {
+export interface AgentResult<T = any> {
   success: boolean;
-  data?: any;
+  data?: T;
   error?: string;
+  metadata?: {
+    fileName: string;
+    parsedAt: Date;
+    wordCount: number;
+    parsingMethod: 'ai-enhanced' | 'regex-basic' | 'regex-advanced';
+  };
 }
 
 export interface ATSResponse {

@@ -45,20 +45,11 @@ export class JobParser {
   private static extractCompany(lines: string[]): string {
     const companyKeywords = ['company:', 'at:', 'organization:'];
     
-    for (const line of lines) {
-      const lowerLine = line.toLowerCase();
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
       
-      for (const keyword of companyKeywords) {
-        if (lowerLine.includes(keyword)) {
-          return line.split(keyword)[1]?.trim() || '';
-        }
-      }
-      
-      if (line.includes(' at ') && line.length < 100) {
-        const parts = line.split(' at ');
-        if (parts.length > 1) {
-          return parts[1].trim();
-        }
+      if (line.length > 5 && line.length < 100 && !line.includes('location') && companyKeywords.some(keyword => line.toLowerCase().includes(keyword))) {
+        return line;
       }
     }
     
@@ -67,20 +58,12 @@ export class JobParser {
 
   private static extractLocation(lines: string[]): string | undefined {
     const locationKeywords = ['location:', 'based in:', 'office:'];
-    const cityStateRegex = /([A-Z][a-z\s]+,\s*[A-Z]{2}|[A-Z][a-z\s]+,\s*[A-Z][a-z\s]+)/;
     
-    for (const line of lines) {
-      const lowerLine = line.toLowerCase();
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
       
-      for (const keyword of locationKeywords) {
-        if (lowerLine.includes(keyword)) {
-          return line.split(keyword)[1]?.trim();
-        }
-      }
-      
-      const locationMatch = line.match(cityStateRegex);
-      if (locationMatch) {
-        return locationMatch[0];
+      if (line.length > 5 && line.length < 100 && !line.includes('company') && locationKeywords.some(keyword => line.toLowerCase().includes(keyword))) {
+        return line;
       }
     }
     
@@ -89,16 +72,16 @@ export class JobParser {
 
   private static extractEmploymentType(lines: string[]): string | undefined {
     const employmentTypes = [
-      'full-time', 'part-time', 'contract', 'temporary', 'internship',
-      'freelance', 'remote', 'hybrid', 'onsite'
+      'full-time', 'part-time', 'contract', 'temporary', 'internship', 'freelance', 'remote', 'hybrid'
     ];
     
-    for (const line of lines) {
-      const lowerLine = line.toLowerCase();
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
       
-      for (const type of employmentTypes) {
-        if (lowerLine.includes(type)) {
-          return type;
+      if (line.length > 5 && line.length < 100) {
+        const foundType = employmentTypes.find(type => line.toLowerCase().includes(type));
+        if (foundType) {
+          return foundType;
         }
       }
     }
@@ -108,16 +91,16 @@ export class JobParser {
 
   private static extractExperienceLevel(lines: string[]): string | undefined {
     const experienceLevels = [
-      'entry level', 'junior', 'mid level', 'senior', 'lead', 'principal',
-      'staff', 'director', 'vp', 'executive', 'manager', 'intern'
+      'entry level', 'junior', 'mid level', 'senior level', 'lead', 'principal', 'staff', 'director', 'vp', 'executive', 'manager', 'intern'
     ];
     
-    for (const line of lines) {
-      const lowerLine = line.toLowerCase();
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
       
-      for (const level of experienceLevels) {
-        if (lowerLine.includes(level)) {
-          return level;
+      if (line.length > 5 && line.length < 100) {
+        const foundLevel = experienceLevels.find(level => line.toLowerCase().includes(level));
+        if (foundLevel) {
+          return foundLevel;
         }
       }
     }
@@ -129,11 +112,12 @@ export class JobParser {
     const salaryRegex = /\$?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*[-–]\s*\$?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*(k|thousand|year|hour|annual)?/i;
     const singleSalaryRegex = /\$?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*(k|thousand|year|hour|annual)?/i;
     
-    for (const line of lines) {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
       const match = line.match(salaryRegex);
       if (match) {
-        const min = parseInt(match[1].replace(/,/g, ''));
-        const max = parseInt(match[2].replace(/,/g, ''));
+        const min = parseInt(match[1]?.replace(/,/g, ''));
+        const max = parseInt(match[2]?.replace(/,/g, ''));
         const multiplier = match[3]?.toLowerCase().includes('k') ? 1000 : 1;
         
         return {
@@ -145,7 +129,7 @@ export class JobParser {
       
       const singleMatch = line.match(singleSalaryRegex);
       if (singleMatch) {
-        const amount = parseInt(singleMatch[1].replace(/,/g, ''));
+        const amount = parseInt(singleMatch[1]?.replace(/,/g, ''));
         const multiplier = singleMatch[2]?.toLowerCase().includes('k') ? 1000 : 1;
         
         return {
@@ -160,83 +144,52 @@ export class JobParser {
   }
 
   private static extractDescription(lines: string[]): string {
-    const descriptionKeywords = ['about the role', 'job description', 'overview', 'summary'];
-    let description = '';
-    let collecting = false;
-
+    const descriptionKeywords = ['description:', 'summary:', 'responsibilities:', 'requirements:', 'qualifications:', 'benefits:'];
+    
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const lowerLine = line.toLowerCase();
+      const line = lines[i].trim();
       
-      if (descriptionKeywords.some(keyword => lowerLine.includes(keyword))) {
-        collecting = true;
-        continue;
-      }
-      
-      if (collecting) {
-        if (this.isSectionHeader(line)) {
-          break;
-        }
-        description += line + ' ';
+      if (line.length > 5 && line.length < 100 && descriptionKeywords.some(keyword => line.toLowerCase().includes(keyword))) {
+        return line;
       }
     }
-
-    return description.trim();
+    
+    return '';
   }
 
   private static extractRequirements(lines: string[]): string[] {
-    const requirementKeywords = ['requirements', 'qualifications', 'skills needed', 'what you need'];
+    const requirementKeywords = ['requirement:', 'qualification:', 'skill:', 'experience:', 'education:'];
     const requirements: string[] = [];
-    let collecting = false;
-
+    
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const lowerLine = line.toLowerCase();
+      const line = lines[i].trim();
       
-      if (requirementKeywords.some(keyword => lowerLine.includes(keyword))) {
-        collecting = true;
-        continue;
-      }
-      
-      if (collecting) {
-        if (this.isSectionHeader(line)) {
-          break;
-        }
-        
-        if (line.match(/^[\w\-\d]+[\.\)]\s+/) || line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
-          requirements.push(line.replace(/^[\w\-\d]+[\.\)]\s+|^[•\-\*]\s*/, '').trim());
+      if (line.length > 5 && line.length < 100 && requirementKeywords.some(keyword => line.toLowerCase().includes(keyword))) {
+        const colonIndex = line.indexOf(':');
+        if (colonIndex !== -1) {
+          requirements.push(line.substring(colonIndex + 1).trim());
         }
       }
     }
-
+    
     return requirements;
   }
 
   private static extractResponsibilities(lines: string[]): string[] {
-    const responsibilityKeywords = ['responsibilities', 'duties', 'what you\'ll do', 'day to day'];
+    const responsibilityKeywords = ['responsibilit', 'dut', 'task', 'manage', 'oversee', 'coordinate', 'lead', 'train', 'mentor'];
     const responsibilities: string[] = [];
-    let collecting = false;
-
+    
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const lowerLine = line.toLowerCase();
+      const line = lines[i].trim();
       
-      if (responsibilityKeywords.some(keyword => lowerLine.includes(keyword))) {
-        collecting = true;
-        continue;
-      }
-      
-      if (collecting) {
-        if (this.isSectionHeader(line)) {
-          break;
-        }
-        
-        if (line.match(/^[\w\-\d]+[\.\)]\s+/) || line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
-          responsibilities.push(line.replace(/^[\w\-\d]+[\.\)]\s+|^[•\-\*]\s*/, '').trim());
+      if (line.length > 5 && line.length < 100 && responsibilityKeywords.some(keyword => line.toLowerCase().includes(keyword))) {
+        const colonIndex = line.indexOf(':');
+        if (colonIndex !== -1) {
+          responsibilities.push(line.substring(colonIndex + 1).trim());
         }
       }
     }
-
+    
     return responsibilities;
   }
 

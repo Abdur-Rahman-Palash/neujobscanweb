@@ -57,6 +57,12 @@ export interface ParsedResume {
   }>;
 }
 
+export interface ParseError {
+  code: string;
+  message: string;
+  details?: string;
+}
+
 export class ResumeParsingAgent {
   private openai: OpenAI;
 
@@ -104,13 +110,13 @@ export class ResumeParsingAgent {
       });
 
       const parsedContent = response.choices[0]?.message?.content;
-      
+
       if (!parsedContent) {
         throw new Error('No response from AI parsing');
       }
 
       let parsedData: ParsedResume;
-      
+
       try {
         parsedData = JSON.parse(parsedContent);
       } catch (parseError) {
@@ -123,20 +129,24 @@ export class ResumeParsingAgent {
 
       return {
         success: true,
-        data: {
-          ...cleanedData,
-          metadata: {
-            fileName,
-            parsedAt: new Date(),
-            wordCount: resumeText.split(/\s+/).length,
-            parsingMethod: 'ai-enhanced',
-          },
+        data: cleanedData,
+        metadata: {
+          fileName,
+          parsedAt: new Date(),
+          wordCount: resumeText.split(/\s+/).length,
+          parsingMethod: 'ai-enhanced',
         },
       };
     } catch (error) {
       return {
         success: false,
-        error: `Resume parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error: `PARSING_ERROR: Resume parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}${error instanceof Error && error.stack ? ` - ${error.stack}` : ''}`,
+        metadata: {
+          fileName,
+          parsedAt: new Date(),
+          wordCount: resumeText.split(/\s+/).length,
+          parsingMethod: 'regex-basic',
+        },
       };
     }
   }
@@ -144,10 +154,10 @@ export class ResumeParsingAgent {
   private fallbackParsing(resumeText: string): ParsedResume {
     // Basic regex-based fallback parsing
     const lines = resumeText.split('\n');
-    
+
     const emailMatch = resumeText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     const phoneMatch = resumeText.match(/[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}/);
-    
+
     return {
       personalInfo: {
         name: lines[0]?.trim() || '',
@@ -253,7 +263,7 @@ export class ResumeParsingAgent {
     } catch (error) {
       return {
         success: false,
-        error: `Keyword extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error: `KEYWORD_EXTRACTION_ERROR: Keyword extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}${error instanceof Error && error.stack ? ` - ${error.stack}` : ''}`,
       };
     }
   }
