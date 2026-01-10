@@ -250,7 +250,7 @@ function generateOptimizedSkillsSection(resumeKeywords: string[], missingKeyword
   return allSkills.join(', ');
 }
 
-function generatePowerEdits(resumeText: string, jobText: string): any {
+function generatePowerEdits(resumeText: string, _jobText: string): any {
   return {
     summary: [
       {

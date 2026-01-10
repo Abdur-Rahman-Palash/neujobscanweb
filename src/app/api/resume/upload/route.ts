@@ -6,7 +6,7 @@ import { existsSync } from 'fs';
 import { FILE_UPLOAD } from '@/lib/constants';
 import { ResumeParser } from '@/lib/parsers/resume-parser';
 import { AIAgentOrchestrator } from '@/lib/ai/agents';
-import { ApiResponse, ParsedResumeData, ResumeAnalysis } from '@/types';
+import { ApiResponse, ParsedResumeData } from '@/types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,7 +56,6 @@ export async function POST(request: NextRequest) {
 
     // Parse resume content
     let content: string;
-    let parsedData: ParsedResumeData;
 
     if (file.type === 'application/pdf') {
       const pdfParse = require('pdf-parse');
@@ -64,14 +63,14 @@ export async function POST(request: NextRequest) {
       content = pdfData.text;
     } else if (file.type.includes('word')) {
       const mammoth = require('mammoth');
-      const result = await mammoth.extractRawText({ buffer });
+      const result = await mammoth.default.extractRawText({ buffer });
       content = result.value;
     } else {
       content = buffer.toString('utf-8');
     }
 
     // Parse resume data
-    parsedData = ResumeParser.parseText(content);
+    const parsedData: ParsedResumeData = ResumeParser.parseText(content);
 
     // Analyze resume with AI
     const openaiApiKey = process.env.OPENAI_API_KEY;

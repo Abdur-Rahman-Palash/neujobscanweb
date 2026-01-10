@@ -10,7 +10,6 @@ import {
   TrendingUp, 
   Zap,
   ArrowRight,
-  CheckCircle,
   Star,
   Users
 } from 'lucide-react';

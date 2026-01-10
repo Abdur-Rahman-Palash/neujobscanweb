@@ -212,8 +212,8 @@ export class JobParser {
           break;
         }
         
-        if (line.match(/^[\w\-\d]+[\.\)]\s+/) || line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
-          benefits.push(line.replace(/^[\w\-\d]+[\.\)]\s+|^[•\-\*]\s*/, '').trim());
+        if (line.match(/^[\w\-\d]+[.)]\s+/) || line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+          benefits.push(line.replace(/^[\w\-\d]+[.)]\s+|^[•\-\*]\s*/, '').trim());
         }
       }
     }

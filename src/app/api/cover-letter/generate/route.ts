@@ -138,7 +138,7 @@ function extractSkills(skills: string): string {
   return skills.split(',').map(s => s.trim()).join(' and ');
 }
 
-function extractAchievements(skills: string): string {
+function extractAchievements(_skills: string): string {
   const achievements = [
     'scalable web applications',
     'user engagement improvements',
@@ -150,7 +150,7 @@ function extractAchievements(skills: string): string {
   return achievements.slice(0, 3).join(', ');
 }
 
-function extractImpressivePoints(jobData: any): string {
+function extractImpressivePoints(_jobData: any): string {
   const points = [
     'industry leadership',
     'innovative solutions',
@@ -161,7 +161,7 @@ function extractImpressivePoints(jobData: any): string {
   return points.slice(0, 2).join(' and ');
 }
 
-function extractCreativeFocus(jobData: any): string {
+function extractCreativeFocus(_jobData: any): string {
   const focusAreas = [
     'user experience design',
     'creative problem-solving',
@@ -172,7 +172,7 @@ function extractCreativeFocus(jobData: any): string {
   return focusAreas.slice(0, 2).join(' and ');
 }
 
-function extractCreativeApproach(jobData: any): string {
+function extractCreativeApproach(_jobData: any): string {
   const approaches = [
     'thinking outside the box',
     'user-centered design',
@@ -183,7 +183,7 @@ function extractCreativeApproach(jobData: any): string {
   return approaches.slice(0, 2).join(' and ');
 }
 
-function extractProfessionalQualities(jobData: any): string {
+function extractProfessionalQualities(_jobData: any): string {
   const qualities = [
     'attention to detail',
     'collaborative teamwork',
@@ -194,7 +194,7 @@ function extractProfessionalQualities(jobData: any): string {
   return qualities.slice(0, 2).join(' and ');
 }
 
-function extractLeadershipActions(jobData: any): string {
+function extractLeadershipActions(_jobData: any): string {
   const actions = [
     'led cross-functional teams',
     'mentored junior developers',
@@ -205,7 +205,7 @@ function extractLeadershipActions(jobData: any): string {
   return actions.slice(0, 2).join(' and ');
 }
 
-function extractBusinessImpact(jobData: any): string {
+function extractBusinessImpact(_jobData: any): string {
   const impacts = [
     'revenue growth of 40%',
     'cost reduction of 30%',
@@ -216,7 +216,7 @@ function extractBusinessImpact(jobData: any): string {
   return impacts.slice(0, 2).join(' and ');
 }
 
-function extractQuantifiableResults(jobData: any): string {
+function extractQuantifiableResults(_jobData: any): string {
   const results = [
     'increased user retention by 25%',
     'reduced support tickets by 60%',
@@ -227,7 +227,7 @@ function extractQuantifiableResults(jobData: any): string {
   return results.slice(0, 2).join(' and ');
 }
 
-function extractTeamFocus(jobData: any): string {
+function extractTeamFocus(_jobData: any): string {
   const focuses = [
     'engineering excellence',
     'product innovation',
@@ -238,7 +238,7 @@ function extractTeamFocus(jobData: any): string {
   return focuses.slice(0, 2).join(' and ');
 }
 
-function extractBusinessStrategy(jobData: any): string {
+function extractBusinessStrategy(_jobData: any): string {
   const strategies = [
     'digital transformation',
     'market expansion',

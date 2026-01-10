@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (raw) {
       try {
         setUser(JSON.parse(raw));
-      } catch (e) {
+      } catch {
         localStorage.removeItem('nj_user');
       }
     }

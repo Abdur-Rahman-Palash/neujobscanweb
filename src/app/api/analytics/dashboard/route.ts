@@ -2,7 +2,7 @@ export const dynamic = 'force-static';
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponse, Analytics } from '@/types';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // In a real application, this would fetch from your database
     // For now, we'll return mock analytics data

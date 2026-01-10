@@ -28,7 +28,7 @@ export class ResumeParser {
     };
 
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-    const phoneRegex = /[\+]?[(]?[0-9]{1,3}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}/;
+    const phoneRegex = /[+]?[(]?[0-9]{1,3}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,4}[-\s.]?[0-9]{1,9}/;
     const linkedinRegex = /linkedin\.com\/in\/[\w-]+/i;
     const githubRegex = /github\.com\/[\w-]+/i;
 
@@ -138,7 +138,7 @@ export class ResumeParser {
         } else if (currentExperience) {
           if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
             currentExperience.achievements = currentExperience.achievements || [];
-            currentExperience.achievements.push(line.replace(/^[•\-\*]\s*/, '').trim());
+            currentExperience.achievements.push(line.replace(/^[•\-*]\s*/, '').trim());
           } else {
             currentExperience.description = (currentExperience.description || '') + line + ' ';
           }
@@ -379,7 +379,7 @@ export class ResumeParser {
         const techMatch = line.match(/\[([^\]]+)\]|(\.js|\.py|\.java|\.cpp|\.react|\.vue|\.angular)/gi);
         
         if (techMatch && currentProject) {
-          const techs = techMatch.map(tech => tech.replace(/[\[\]]/g, ''));
+          const techs = techMatch.map(tech => tech.replace(/[[\]]/g, ''));
           currentProject.technologies = [...(currentProject.technologies || []), ...techs];
         } else if (!currentProject || currentProject.name) {
           currentProject = {

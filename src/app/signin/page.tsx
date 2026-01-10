@@ -9,13 +9,14 @@ import { useAuth } from '@/context/AuthContext';
 export default function SigninPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [next, setNext] = useState<string | undefined>(undefined);
   const auth = useAuth();
 
-  useEffect(() => {
-    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-    setNext(params?.get('next') || undefined);
-  }, []);
+  // Initialize next from URL params using lazy initialization
+  const [next] = useState<string | undefined>(() => {
+    if (typeof window === 'undefined') return undefined;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('next') || undefined;
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -8,7 +8,6 @@ import {
   Users, 
   Target, 
   TrendingUp, 
-  Globe, 
   Shield, 
   Mail,
   Phone,
@@ -85,7 +84,7 @@ export default function AboutPage() {
               About NeuJobScan
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              We're on a mission to revolutionize how job seekers approach their career search. 
+              We&apos;re on a mission to revolutionize how job seekers approach their career search. 
               Founded by recruiting professionals and AI experts, NeuJobScan combines cutting-edge technology 
               with deep industry knowledge to help you stand out in a competitive job market.
             </p>
@@ -214,7 +213,7 @@ export default function AboutPage() {
               Meet Our Team
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              The experts behind NeuJobScan's innovation.
+              The experts behind NeuJobScan&apos;s innovation.
             </p>
           </motion.div>
 
@@ -258,7 +257,7 @@ export default function AboutPage() {
               Get in Touch
             </h2>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Have questions? We'd love to hear from you.
+              Have questions? We&apos;d love to hear from you.
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">

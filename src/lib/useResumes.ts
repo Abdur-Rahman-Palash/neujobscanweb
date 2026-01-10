@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export type Resume = {
   id: string
@@ -38,25 +38,21 @@ function seedSample(): Resume[] {
 }
 
 export default function useResumes() {
-  const [resumes, setResumes] = useState<Resume[]>([])
-
-  useEffect(() => {
+  // Use lazy initialization to avoid setState in effect
+  const [resumes, setResumes] = useState<Resume[]>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (!raw) {
         const seed = seedSample()
         localStorage.setItem(STORAGE_KEY, JSON.stringify(seed))
-        setResumes(seed)
-        return
+        return seed
       }
-      setResumes(JSON.parse(raw))
+      return JSON.parse(raw)
     } catch (err) {
       console.error('useResumes load error', err)
-      const seed = seedSample()
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(seed))
-      setResumes(seed)
+      return []
     }
-  }, [])
+  })
 
   function persist(next: Resume[]) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))

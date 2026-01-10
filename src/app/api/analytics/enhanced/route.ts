@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 
 async function generateEnhancedAnalytics(userId: string, timeRange: string): Promise<any> {
   // Mock data generation based on time range
-  const days = parseInt(timeRange) || 30;
+  const _days = parseInt(timeRange) || 30;
   
   // Generate interview metrics
   const totalApplications = Math.floor(Math.random() * 50) + 100;

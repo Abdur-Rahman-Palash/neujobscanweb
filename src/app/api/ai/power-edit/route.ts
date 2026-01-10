@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function generatePowerEditSuggestions(section: string, originalText: string, jobText: string): Promise<any[]> {
+async function generatePowerEditSuggestions(section: string, originalText: string, _jobText: string): Promise<any[]> {
   // Simulate AI-powered suggestions for different resume sections
   const sectionSuggestions = {
     summary: [

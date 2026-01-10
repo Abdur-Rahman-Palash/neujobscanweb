@@ -10,17 +10,24 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [next, setNext] = useState<string | undefined>(undefined);
-  const [plan, setPlan] = useState<string | undefined>(undefined);
-  const [trial, setTrial] = useState<boolean>(false);
-
-  useEffect(() => {
-    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-    setNext(params?.get('next') || undefined);
-    setPlan(params?.get('plan') || undefined);
-    setTrial(params?.get('trial') === '1');
-  }, []);
   const { signup, demoSignin } = useAuth();
+
+  // Initialize from URL params using lazy initialization
+  const [next] = useState<string | undefined>(() => {
+    if (typeof window === 'undefined') return undefined;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('next') || undefined;
+  });
+  const [plan] = useState<string | undefined>(() => {
+    if (typeof window === 'undefined') return undefined;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('plan') || undefined;
+  });
+  const [trial] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('trial') === '1';
+  });
 
   useEffect(() => {
     setError('');

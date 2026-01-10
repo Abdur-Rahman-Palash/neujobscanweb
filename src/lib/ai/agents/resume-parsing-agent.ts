@@ -119,7 +119,7 @@ export class ResumeParsingAgent {
 
       try {
         parsedData = JSON.parse(parsedContent);
-      } catch (parseError) {
+      } catch {
         // Fallback parsing if JSON fails
         parsedData = this.fallbackParsing(resumeText);
       }
@@ -156,7 +156,7 @@ export class ResumeParsingAgent {
     const lines = resumeText.split('\n');
 
     const emailMatch = resumeText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-    const phoneMatch = resumeText.match(/[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}/);
+    const phoneMatch = resumeText.match(/[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}/);
 
     return {
       personalInfo: {
